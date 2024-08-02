@@ -4,13 +4,28 @@ const User = require('../model/userModel')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
-
-
-
+const transporter = require('../utils/nodemailer')
+const otpGenerator = require('otp-generator')
 
 
 
 const userController = {
+    generate_otp:asyncHandler(async(req,res)=>{
+        const {name,phoneNumber,email} = req.body
+        this.otp = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false,lowerCaseAlphabets:false, });
+        console.log(this.otp);
+        await transporter.sendMail({
+            from:{
+                name:"JOB PORTAL",
+                address:"jobportalbybasil@gmail.com"
+            },
+            to: "watchutube47@gmail.com", // list of receivers
+            subject: `Hello ${name}, OTP for Job Portal`,
+            html: `<b>Your One time Password for job-Portal is <h3>${this.otp}</h3></b>`, // html body
+          });
+         
+          res.send("Done!!")
+    }),
     createUser:asyncHandler(async(req,res)=>{
         const {name,email,phoneNumber,password} = req.body
 
